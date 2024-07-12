@@ -1,0 +1,14 @@
+{
+  "title": "Global NPC Hearing System",
+  "type": "npc",
+  "tags": [
+    "fun",
+    "realism"
+  ],
+  "ignore": [
+    ".txt",
+    "todo.txt",
+    ".png",
+    "todo.md"
+  ]
+}

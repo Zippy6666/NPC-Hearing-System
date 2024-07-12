@@ -1,0 +1,1 @@
+NPC_HEAR.EnabledCvar = CreateConVar("npc_hearing_enable", "1", bit.band(FCVAR_ARCHIVE, FCVAR_REPLICATED))
