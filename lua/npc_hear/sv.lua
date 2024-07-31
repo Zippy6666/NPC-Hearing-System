@@ -69,7 +69,7 @@ function NPC:ReactToSound(SoundData, DistSqr)
 
     -- Set alert if it was loud
     local loudness = GetNPCPercievedLoudness(SoundData)
-    if loudness == NPC_HEAR_BANG or loudness == NPC_HEAR_VOICE then
+    if (loudness == NPC_HEAR_BANG or loudness == NPC_HEAR_VOICE) && self:GetNPCState()==NPC_STATE_IDLE then
         self:SetNPCState(NPC_STATE_ALERT)
         self:AlertSound()
     end
