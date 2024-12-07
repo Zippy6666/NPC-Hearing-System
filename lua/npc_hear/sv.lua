@@ -49,6 +49,18 @@ end
 
 -- React to the heard sound
 function NPC:ReactToSound(SoundData, DistSqr)
+
+    if self.HurtSoDoesNotReactToSound then return end
+
+    -- Doing some other engine sound reaction already, return
+    if self:IsCurrentSchedule(SCHED_ALERT_FACE_BESTSOUND)
+    or self:IsCurrentSchedule(SCHED_ALERT_REACT_TO_COMBAT_SOUND)
+    or self:IsCurrentSchedule(SCHED_FLEE_FROM_BEST_SOUND)
+    or self:IsCurrentSchedule(SCHED_INVESTIGATE_SOUND)
+    or self:IsCurrentSchedule(SCHED_TAKE_COVER_FROM_BEST_SOUND)
+    then return end
+
+
     local Emitter = SoundData.Entity
     local SoundPos = SoundData.Pos
 
@@ -298,7 +310,7 @@ local function OnEntEmitSound(SoundData)
                 MsgN(npc, " heard sound ("..SNDLVL_TRANS[GetNPCPercievedLoudness(SoundData)]..")!")
             end
 
-            npc:ReactToSound(SoundData, DistSqr)
+            npc:CONV_CallNextTick("ReactToSound", SoundData, DistSqr)
 
         end
     end
@@ -326,6 +338,13 @@ net.Receive("NPCHearExplosion", function(_, ply)
 end)
 
 
+hook.Add("EntityTakeDamage", "NPCHearing", function( ent, dmg )
+    if !NPC_HEAR.EnabledCvar:GetBool() then return end
+    if !ent.UsesNPCHearingSystem then return end
+
+    ent:CONV_TempVar("HurtSoDoesNotReactToSound", true, 0.5)
+end)
+
 
 hook.Add("EntityEmitSound", "NPCHearing", function(SoundData)
     if !NPC_HEAR.EnabledCvar:GetBool() then return end
@@ -348,6 +367,7 @@ hook.Add( "OnEntityCreated", "NPCHearing_RegisterNPC", function( ent )
 
         if ent:IsNPC() && ent:GetMoveType()==MOVETYPE_STEP && !ent.IsVJBaseSNPC then
 
+            ent.UsesNPCHearingSystem = true
             ent.NextHearSound = CurTime()
             ent.TracingSound = false
 
