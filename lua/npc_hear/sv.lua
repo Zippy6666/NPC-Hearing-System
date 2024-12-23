@@ -61,6 +61,11 @@ function NPC:ReactToSound(SoundData, DistSqr)
     then return end
 
 
+    local hint = sound.GetLoudestSoundHint(SOUND_DANGER, self:GetPos())
+    if hint then return end -- In danger, ignore sound
+
+
+    
     local Emitter = SoundData.Entity
     local SoundPos = SoundData.Pos
 
