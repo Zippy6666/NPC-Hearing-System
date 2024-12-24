@@ -226,12 +226,6 @@ function NPC:HeardSound(SoundData, DistSqr)
     local Emitter = SoundData.Entity
 
 
-    -- Too close, likely its own footsteps for example
-    if DistSqr < 100 then
-        return false
-    end
-
-
     -- No sound level??
     if SoundData.SoundLevel <= SNDLVL_NONE then
         return false
@@ -267,7 +261,7 @@ function NPC:HeardSound(SoundData, DistSqr)
 
 
     -- Don't react to something owned by itself, like a grenade
-    if IsValid(Emitter) && Emitter:GetOwner() == self then
+    if IsValid(Emitter) && own == self then
         return false
     end
 
@@ -281,6 +275,16 @@ function NPC:HeardSound(SoundData, DistSqr)
     -- In a dormant schedule, don't react
     if self:IsCurrentSchedule(SCHED_NPC_FREEZE) or self:GetNPCState() == NPC_STATE_SCRIPT then
         return false
+    end
+
+
+    -- Sound was toolgun: ignore
+    if Emitter:IsPlayer() && SoundData.OriginalSoundName == "Airboat.FireGunRevDown" then
+        local wep = Emitter:GetActiveWeapon()
+
+        if IsValid(wep) && wep:GetClass() == "gmod_tool" then
+            return false
+        end
     end
 
 
